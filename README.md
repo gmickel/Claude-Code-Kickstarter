@@ -1,18 +1,20 @@
 # 🌀 Claude-Code-Kickstarter
 
-_The one-file setup that drops a full “plan → tests → code → docs → PR” workflow into **any** Git repo—powered by Claude Code._
+<img style="display: block; margin: 10px auto;" src="logo.png" alt="Claude Code Kickstarter Logo" height="400">
+
+_The one-file setup that drops a full "plan → tests → code → docs → PR" workflow into **any** Git repo—powered by Claude Code._
 
 ---
 
 ## ✨ What is this?
 
-Inside this repo you’ll find **one magic Markdown file**:
+Inside this repo you'll find **one magic Markdown file**:
 
 ```
 .claude/commands/setup-claude-workflow.md
 ```
 
-Copy that file into _any_ existing project (monorepo, single package, JavaScript, Bun, TypeScript—doesn’t matter).
+Copy that file into _any_ existing project (monorepo, single package, JavaScript, Bun, TypeScript—doesn't matter).
 Then run:
 
 ```bash
@@ -28,7 +30,7 @@ Claude will:
    - _Branch → Plan → Tests → Code → Verify → Docs → Changelog → PR_
 
 4. **Install** repo-local helper commands (`/project:regen-docs`, `/project:next`, etc.).
-5. **Merge** a minimal GitHub Actions workflow if you don’t have one.
+5. **Merge** a minimal GitHub Actions workflow if you don't have one.
 6. Stage everything with `git add` and politely remind you to commit.
 
 No `git init`, no history rewrite, no yak-shaving.
@@ -64,7 +66,7 @@ continue
 | **CLAUDE.md**                   | Guard-rails, workflow table, Doc-keeper policy, package-README guidelines. |
 | **docs/architecture.md**        | C4/Mermaid diagram stub.                                                   |
 | **docs/glossary.md**            | Empty _Term \| Definition_ table.                                          |
-| **docs/api-guide.md**           | “AUTO START/END” markers for TypeDoc merge.                                |
+| **docs/api-guide.md**           | "AUTO START/END" markers for TypeDoc merge.                                |
 | **docs/ADRs/README.md**         | MADR 1.2 template pointer.                                                 |
 | **docs/onboarding.md**          | Checklist for new devs.                                                    |
 | **docs/impl/** & **docs/plan/** | Empty folders so Git tracks them.                                          |
@@ -91,7 +93,7 @@ Add these to `~/.claude/settings.json` once and forget about permission prompts:
 }
 ```
 
-Feel free to swap `pnpm` for `npm` or `yarn`—Claude will ask if it can’t find a script.
+Feel free to swap `pnpm` for `npm` or `yarn`—Claude will ask if it can't find a script.
 
 ---
 
@@ -111,7 +113,7 @@ Feel free to swap `pnpm` for `npm` or `yarn`—Claude will ask if it can’t fin
 
 **Q: My monorepo has many packages—can each one have its own README and CLAUDE.md?**
 
-> Yep. Doc-keeper treats `packages/*/README.md` and `packages/*/CLAUDE.md` as “ask-before-update” docs.
+> Yep. Doc-keeper treats `packages/*/README.md` and `packages/*/CLAUDE.md` as "ask-before-update" docs.
 > Add package-specific tech-stack notes there and Claude will respect them.
 
 **Q: What if I hate Mermaid?**
@@ -120,7 +122,7 @@ Feel free to swap `pnpm` for `npm` or `yarn`—Claude will ask if it can’t fin
 
 **Q: Does this work with Sonnet?**
 
-> It’ll work—just slower and dumber. Run `/model opus` once; worth the extra pennies.
+> It'll work—just slower and dumber. Run `/model opus` once; worth the extra pennies.
 
 ---
 
