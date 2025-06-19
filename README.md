@@ -40,18 +40,27 @@ No `git init`, no history rewrite, no yak-shaving.
 ## 🏄‍♂️ Quick start
 
 ```bash
-# 1. add the command file
-mkdir -p .claude/commands
-curl -o .claude/commands/setup-claude-workflow.md \
-  https://raw.githubusercontent.com/<your-fork>/claude-code-kickstarter/main/.claude/commands/setup-claude-workflow.md
+# Option A – install once globally
+mkdir -p ~/.claude/commands
+curl -o ~/.claude/commands/setup-claude-workflow.md \
+  https://raw.githubusercontent.com/gmickel/Claude-Code-Kickstarter/refs/heads/main/setup-claude-workflow.md
 
-# 2. run it
-/user:setup-claude-workflow "My Awesome Project"
-
-# 3. commit the goodies
+# In any repo
+cd my-existing-repo
+/user:setup-claude-workflow "My Existing Repo"
 git commit -m "chore: add Claude workflow"
 
-# 4. write a PRD and let Claude take the wheel 🚗
+# Option B – keep the file in the repo
+mkdir -p .claude/commands
+curl -o .claude/commands/setup-claude-workflow.md \
+  https://raw.githubusercontent.com/gmickel/Claude-Code-Kickstarter/refs/heads/main/setup-claude-workflow.md
+/project:setup-claude-workflow "My Existing Repo"
+git commit -m "chore: add Claude workflow"
+```
+
+Then write a PRD and let Claude take the wheel:
+
+```bash
 echo "# PRD #42 – Super Search" > docs/prd_42.md
 /plan take docs/prd_42.md and create plan
 continue
@@ -76,24 +85,67 @@ continue
 
 Already got a `CLAUDE.md`?
 _The setup command will **not** overwrite it._
-Instead, it prints a diff and offers to run `/user:upgrade-claude-policy` which merges the new policy/table into your file.
+Instead, it will print the contents of the new CLAUDE.md and ask you to review it and merge it into your existing file.
 
 ---
 
-## 🛡️ Recommended tool permissions
+## 🛡️ Recommended tool permissions (tune to taste)
 
-Add these to `~/.claude/settings.json` once and forget about permission prompts:
+Claude Code asks before it runs any Bash command or reads a file.
+You can silence the obvious, always-safe commands by whitelisting them in `~/.claude/settings.json`.
 
 ```json
 {
   "permissions": {
-    "allow": ["Bash(pnpm:*)", "Bash(bun:*)", "Bash(git:*)", "Bash(gh:*)"],
+    "allow": [
+      // 🛠 Package managers & scripts
+      "Bash(pnpm:*)",
+      "Bash(bun:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(pnpx:*)",
+
+      // 🧑‍💻 Git & GitHub CLI
+      "Bash(git:*)",
+      "Bash(gh:*)",
+
+      // 🧪 Typical test / lint / typecheck tools
+      "Bash(vitest:*)",
+      "Bash(eslint:*)",
+      "Bash(biome:*)",
+      "Bash(tsc:*)",
+
+      // 📚 Basic shell queries (safe introspection)
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(cd:*)",
+      "Bash(pwd:*)",
+      "Bash(which:*)",
+
+      // 🕵️ Diff & search helpers
+      "Bash(diff:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+
+      // 🌐 Curl / wget for fetching docs - use at your own risk
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ],
     "deny": []
   }
 }
 ```
 
-Feel free to swap `pnpm` for `npm` or `yarn`—Claude will ask if it can't find a script.
+**How to customize:**
+
+1. **Start minimal** – add only what you never want to be prompted for.
+2. **When Claude pauses for permission**, decide whether that pattern is safe to whitelist. If yes, copy the pattern (`Bash(tool:*)`) into your allow list.
+3. **Remove entries any time** – Claude will simply ask again next run.
+
+**Tip:** Patterns are glob-like. `Bash(pnpm:*)` covers `pnpm install`, `pnpm run lint`, `pnpm exec`, etc.
+
+Already have a settings file? Just merge the new "allow" patterns into your existing JSON.
 
 ---
 
@@ -120,10 +172,6 @@ Feel free to swap `pnpm` for `npm` or `yarn`—Claude will ask if it can't find 
 
 > Swap the guideline in `CLAUDE.md` to PlantUML or draw\.io links—Doc-keeper will follow your rule.
 
-**Q: Does this work with Sonnet?**
-
-> It'll work—just slower and dumber. Run `/model opus` once; worth the extra pennies.
-
 ---
 
 ## 🥳 Contribute
@@ -138,4 +186,4 @@ Just keep prompts **short & snappy**—Claude likes imperative prose.
 
 ---
 
-Happy **plan-test-code-docs** looping! If you ship something cool with this workflow, tweet @you and brag. 🎉
+Happy **plan-test-code-docs** looping! If you ship something cool with this workflow, share it with the community. 🎉
