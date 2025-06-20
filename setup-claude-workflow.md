@@ -75,67 +75,74 @@ u/README.md
 u/docs/architecture.md
 u/docs/glossary.md
 
-<!-- Feature docs injected at runtime -->
+<!-- Feature docs are injected dynamically (docs/prd_*, docs/plan/*, docs/impl/*) -->
 
 ---
 
 ## Principles
 
-1. **Plan → Tests → Code → Docs → Commit/Push** for every feature.
-2. Work on branch `feature/<id>-<slug>`.
-3. Doc‑keeper keeps canonical docs fresh.
+## Principles
 
-## Workflow Table (Claude MUST follow)
+## Principles
 
-| Stage          | Claude’s tasks                                                                                                                                                                                                                                            | Git action                            |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| **Branch**     | Create & switch branch.                                                                                                                                                                                                                                   | `git checkout -b feature/<id>-<slug>` |
-| **Plan**       | `/plan take docs/prd_<id>.md and create plan` → writes plan + issues.                                                                                                                                                                                     | commit `plan`/`issues`                |
-| **Guide**      | Write `docs/impl/<id>.md`.                                                                                                                                                                                                                                | commit guide                          |
-| **Tests**      | Write failing tests.                                                                                                                                                                                                                                      | commit tests                          |
-| **Code**       | Implement until tests pass.                                                                                                                                                                                                                               | commit feat/fix                       |
-| **Verify**     | Run package scripts `typecheck`, `test`, and `lint` (e.g. `pnpm run typecheck`, `bun run test`, `npm run lint`) until **all three exit 0**. If any script is missing, ask the user which command to run instead. Fix issues and re-run before continuing. | commit `chore: fix lint/ts`           |
-| **Doc-keeper** | Auto-refresh stale docs.                                                                                                                                                                                                                                  | commit docs                           |
-| **Changelog**  | `/project:update-changelog`.                                                                                                                                                                                                                              | commit changelog                      |
-| **Push & PR**  | Push branch & open PR.                                                                                                                                                                                                                                    | `git push -u origin && gh pr create`  |
+1. **Plan → Tests → Code → Verify → Docs → Commit/Push** for every feature.
+2. Work on branch `feature/<id>-<slug>` (use `git worktree add` when parallel streams help).
+3. Keep changes **minimal** – simplest viable fix; avoid token fountains.
+4. Doc-keeper keeps canonical docs fresh.
 
-## Documentation Policy
+> **The User should always start non-trivial work in Planning Mode**
 
-**Only triggers & mandatory status belong in this table. Content details live in the next section.**
+## Workflow table (Claude MUST follow)
 
-| Doc                             | Trigger                                | Mandatory |
-| ------------------------------- | -------------------------------------- | --------- |
-| docs/architecture.md            | New service/DB/ext‑dep                 | ✅        |
-| docs/api-guide.md               | Public API change                      | ✅        |
-| docs/glossary.md                | New domain term                        | ✅        |
-| docs/ADRs/                      | Decision → Accepted                    | ✅        |
-| CHANGELOG.md                    | Feature merged                         | ✅        |
-| README.md (root)                | Root setup/CLI change                  | 🔁        |
-| (packages \| apps)/\*/README.md | Package‑level scripts, Docker changes  | 🔁        |
-| (packages \| apps)/\*/CLAUDE.md | Tech‑stack or env changes for that pkg | 🔁        |
+| Stage          | Claude’s tasks                                                                                                                                                                                                                                     | Git action |
+|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| **Branch**     | Create & switch branch (`git checkout -b feature/<id>-<slug>`, or worktree if parent dir has *.git). | branch created |
+| **Plan**       | `/plan take docs/prd_<id>.md and create plan` → writes plan & issues. | commit `plan` / `issues` |
+| **Guide**      | Write `docs/impl/<id>.md`. | commit guide |
+| **Tests**      | Write failing tests for every Acceptance Criterion. | commit tests |
+| **Code**       | Implement until tests pass. | commit `feat` / `fix` |
+| **Verify**     | Run package scripts `typecheck`, `test`, and `lint` (e.g. `pnpm run typecheck`, `bun run test`, `npm run lint`) **until all exit 0**. If any script is missing, **ask user** which command to run instead. Fix issues and re-run. | commit `chore: fix verify` |
+| **Doc-keeper** | Auto-refresh stale docs (see policy). | commit docs |
+| **Review**     | `/project:review-self`; address critical feedback. | commit `chore: address review` |
+| **Changelog**  | `/project:update-changelog`. | commit changelog |
+| **Push & PR**  | `git push -u origin` and `gh pr create --fill`. | PR opened |
+                                                                                                                                                                                                                       | `git push -u origin && gh pr create`  |
+
+## Documentation Policy  
+*Only triggers & mandatory status belong here; style lives in next section.*
+
+| Doc                                   | Trigger                                  | Mandatory |
+|---------------------------------------|------------------------------------------|-----------|
+| docs/architecture.md                  | New service / DB / ext-dep               | ✅ |
+| docs/api-guide.md                     | Public API change                        | ✅ |
+| docs/glossary.md                      | New domain term                          | ✅ |
+| docs/ADRs/                            | Decision → Accepted                      | ✅ |
+| CHANGELOG.md                          | Feature merged                           | ✅ |
+| README.md (root)                      | Root setup / CLI change                  | 🔁 |
+| (packages &#124; apps)/*/README.md    | Package scripts / Docker change          | 🔁 |
+| (packages &#124; apps)/*/CLAUDE.md    | Tech-stack or env change for that pkg    | 🔁 |
 
 ### Content guidelines
-
-| Doc                                 | Recommended content style                                                                       |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **docs/architecture.md**            | • One **C4 Context/Container diagram** in Mermaid.<br>• Runtime-flow bullets.<br>• ≤ 12 nodes.  |
-| **docs/api-guide.md**               | • TypeDoc AUTO section.<br>• Hand‑written usage examples above AUTO block.                      |
-| **docs/glossary.md**                | • `Term \| Definition` table.<br>• Single‑line defs; ADR/code links.                            |
-| **docs/ADRs/**                      | • MADR 1.2 template.<br>• `NNNN-title.md`; status flow `Proposed` → `Accepted`.                 |
-| **CHANGELOG.md**                    | • `## [x.y.z] – YYYY‑MM‑DD` header per release.<br>• Keep Unreleased header on top.             |
-| **README.md (root)**                | • Shield badges.<br>• Quick‑start (`pnpm install && pnpm dev`).<br>• Link to CLAUDE.md.         |
-| (**packages \| apps)/\*/README.md** | • Purpose + public API.<br>• Run/test/deploy instructions.<br>• Docker snippet if relevant.     |
-| (**packages \| apps)/\*/CLAUDE.md** | • Tech stack & env vars.<br>• Any workflow deviations.<br>• Claude guidelines for this package. |
+| Doc | Recommended content style |
+|-----|---------------------------|
+| **docs/architecture.md** | • One **C4 Context/Container** diagram in Mermaid.<br>• Bullet list of key runtime flows.<br>• Max 12 nodes. |
+| **docs/api-guide.md** | • AUTO-merged TypeDoc section.<br>• Hand-written usage snippets above AUTO block. |
+| **docs/glossary.md** | • `Term \| Definition` table.<br>• One-line defs; link ADRs/code as needed. |
+| **docs/ADRs/** | • MADR 1.2 files `NNNN-title.md`.<br>• Status flow `Proposed` → `Accepted`. |
+| **CHANGELOG.md** | • Keep “Unreleased” on top.<br>• `## [x.y.z] – YYYY-MM-DD` headers. |
+| **README.md (root)** | • Build/docs badges.<br>• Quick-start (`pnpm install && pnpm dev`).<br>• Link to this file. |
+| **packages/*/README.md** | • Purpose + public API.<br>• Run / test / deploy steps.<br>• Docker snippet if deployable. |
+| **packages/*/CLAUDE.md** | • Package-specific tech stack & env vars.<br>• Any workflow deviations.<br>• Extra Claude guidelines for this pkg. |
 
 ---
 
-### Doc‑keeper Reflex
+### Doc-keeper Reflex
+After **green tests** **or** `/project:regen-docs`:
+1. Evaluate policy table.  
+2. If any ✅ doc is stale → WRITE update & `git add`.  
+3. If any 🔁 doc is stale → ask unless `/force-docs` flag.  
+4. If the same request stalls **3×**, propose `/clear` to restart thread.
 
-After **green tests** or `/project:regen-docs`:
-
-1. Evaluate policy.
-2. If any ✅ doc stale → WRITE update & `git add`.
-3. If any 🔁 doc stale → ask unless `/force-docs` flag.
 
 ## Safety Rails
 
